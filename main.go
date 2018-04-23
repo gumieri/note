@@ -227,6 +227,14 @@ func listNotes(context *cli.Context) {
 func main() {
 	app := cli.NewApp()
 
+	app.Name = "Note"
+
+	app.Version = "0.0.1"
+
+	app.Usage = "Quick and easy Command-line tool for taking notes"
+	app.UsageText = "note [just type a text] [or command] [with command options]"
+	app.ArgsUsage = "[text]"
+
 	app.Action = writeNote
 
 	app.Commands = []cli.Command{
