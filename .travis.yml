@@ -1,0 +1,21 @@
+language: go
+go:
+- 1.x
+script:
+- GOOS=linux GOARCH=amd64 go build -o release/note-linux-amd64
+- GOOS=darwin GOARCH=amd64 go build -o release/note-osx-amd64
+- GOOS=windows GOARCH=amd64 go build -o release/note-win-amd64.exe --ldflags="-H windowsgui"
+- GOOS=windows GOARCH=386 go build -o release/note-win-386.exe --ldflags="-H windowsgui"
+deploy:
+  provider: releases
+  api_key:
+    secure: by6DVY7v5ozuMtP6IK2K4xbEJvOqg3C9YoZyr7g5/38tC6YtSIKb5ZJpsq2WqdQ1Uu9O4ZU631qMPKls52MREG0nDN7b/o9zYN1rvAQNYMWRCa/aeLAOTgJNkaRN7ekBpo3Pe/skCEht0Cf5frsenDV+4/aA7/mUr/DzJe1hVYRsqk5wSGs59T/Tm4RBj1mKw+0DQKsOQk6eVeM4y9wMEYzenYxEh7XvEjsokSmuE5NR5zkcAKjIKeWDKQPo8wiaaULbpsK5Ej1WeB2cO3Su0ak1VHYGSVmyeIdaB+oeTVovuWXAx7h5176mVm0HQ9BGHrEJzSdeyeNW8PjyqKtK7AqWfSLVW4RpnSTiVOlKJT6P1YhcPNGGgcWPiHUl8+c/AQycp85ABWl+KRQ9wnGTIwejCgzEcjT5l/GUercTigp+Q5eIwkJUXumjPUsaMH8ja3YsN5rH3nAs3l/21miCCbhXWl7suUYu3R5ELY2ui7R7K061xdfxqslTBWMI4s4oRaNFQOBRqz48esKUhWJLtkNFsda+k2wcMFHFHJRtkIbOWUlpe8Mkwh/ih2oREwGm0mcSU3d3fOEOlyYfEBwYMM1IikBejtv7Pm8ffsWnYFQaWfo89uQk0Evr/A96eYFAyJk3g6omDfvgGsdwkyipr47KmdEDQe2DViKIR5JHZWk=
+  skip_cleanup: true
+  file:
+    - release/note-linux-amd64
+    - release/note-osx-amd64
+    - release/note-win-amd64.exe
+    - release/note-win-386.exe
+  on:
+    repo: gumieri/note
+    tags: true
