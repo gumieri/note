@@ -64,6 +64,26 @@ func incrementNoteNumber(notePath string) (number int, err error) {
 	return
 }
 
+func edit(editorCommand string, filePath string) (err error) {
+	editor := exec.Command(editorCommand, filePath)
+
+	editor.Stdin = os.Stdin
+	editor.Stdout = os.Stdout
+	editor.Stderr = os.Stderr
+
+	err = editor.Start()
+	if err != nil {
+		return
+	}
+
+	err = editor.Wait()
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func getTextFromEditor(editorCommand string, fileName string) (text string, err error) {
 	filePath := filepath.Join(os.TempDir(), fileName)
 
@@ -121,22 +141,17 @@ func writeNote(context *cli.Context) {
 		noteContent = strings.Join(context.Args()[:], " ") + "\n"
 	}
 
-	noteTitle := noteContent
-
 	if noteContent == "" {
 		log.Fatal(errors.New("Empty content"))
 	}
 
-	firstLineBreakIndex := strings.Index(noteTitle, "\n")
-	if firstLineBreakIndex >= 0 {
-		noteTitle = noteTitle[0:firstLineBreakIndex]
-	}
+	noteTitle := strings.Split(noteContent, "\n")[0]
+	if len(noteTitle) > 72 {
+		nextCharacter := noteTitle[72:73]
 
-	if len(noteContent) > 72 {
-		noteTitle = noteContent[0:72]
+		noteTitle = noteTitle[0:72]
 
-		nextCharacter := noteContent[72:73]
-		if nextCharacter != " " && nextCharacter != "\n" {
+		if nextCharacter != " " {
 			lastSpace := strings.LastIndex(noteTitle, " ")
 			noteTitle = noteTitle[0:lastSpace]
 		}
@@ -208,6 +223,32 @@ func deleteNote(context *cli.Context) {
 	return
 }
 
+func editNote(context *cli.Context) {
+	notePath := os.Getenv("NOTE_PATH")
+
+	notesNames, err := existingNotesNames(notePath)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	noteToFind := strings.Join(context.Args()[:], " ")
+
+	notesFound := fuzzy.RankFind(noteToFind, notesNames)
+	noteFound := notesFound[0].Target
+
+	err = edit(os.Getenv("EDITOR"), filepath.Join(notePath, noteFound))
+	if err != nil {
+		return
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return
+}
+
 func listNotes(context *cli.Context) {
 	notePath := os.Getenv("NOTE_PATH")
 
@@ -229,7 +270,7 @@ func main() {
 
 	app.Name = "Note"
 
-	app.Version = "0.0.1"
+	app.Version = "0.0.2"
 
 	app.Usage = "Quick and easy Command-line tool for taking notes"
 	app.UsageText = "note [just type a text] [or command] [with command options]"
@@ -244,14 +285,20 @@ func main() {
 			Action: showNote,
 		},
 		{
+			Name:    "edit",
+			Aliases: []string{"e"},
+			Usage:   "edit a note contet",
+			Action:  editNote,
+		},
+		{
 			Name:    "delete",
-			Aliases: []string{"del", "rm"},
+			Aliases: []string{"del", "d", "rm"},
 			Usage:   "delete a note",
 			Action:  deleteNote,
 		},
 		{
 			Name:    "list",
-			Aliases: []string{"ls"},
+			Aliases: []string{"ls", "l"},
 			Usage:   "list notes",
 			Action:  listNotes,
 		},
