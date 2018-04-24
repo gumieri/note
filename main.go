@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/user"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -14,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/renstrom/fuzzysearch/fuzzy"
+	"github.com/spf13/viper"
 	"github.com/urfave/cli"
 )
 
@@ -120,7 +122,7 @@ func getTextFromEditor(editorCommand string, fileName string) (text string, err 
 }
 
 func writeNote(context *cli.Context) {
-	notePath := os.Getenv("NOTE_PATH")
+	notePath := viper.GetString("notePath")
 
 	nextNumber, err := incrementNoteNumber(notePath)
 
@@ -132,7 +134,7 @@ func writeNote(context *cli.Context) {
 
 	var noteContent string
 	if len(context.Args()) == 0 {
-		noteContent, err = getTextFromEditor(os.Getenv("EDITOR"), nextNumberString)
+		noteContent, err = getTextFromEditor(viper.GetString("editor"), nextNumberString)
 
 		if err != nil {
 			log.Fatal(err)
@@ -176,7 +178,7 @@ func writeNote(context *cli.Context) {
 }
 
 func showNote(context *cli.Context) {
-	notePath := os.Getenv("NOTE_PATH")
+	notePath := viper.GetString("notePath")
 
 	notesNames, err := existingNotesNames(notePath)
 
@@ -201,7 +203,7 @@ func showNote(context *cli.Context) {
 }
 
 func deleteNote(context *cli.Context) {
-	notePath := os.Getenv("NOTE_PATH")
+	notePath := viper.GetString("notePath")
 
 	notesNames, err := existingNotesNames(notePath)
 
@@ -224,7 +226,7 @@ func deleteNote(context *cli.Context) {
 }
 
 func editNote(context *cli.Context) {
-	notePath := os.Getenv("NOTE_PATH")
+	notePath := viper.GetString("notePath")
 
 	notesNames, err := existingNotesNames(notePath)
 
@@ -237,7 +239,7 @@ func editNote(context *cli.Context) {
 	notesFound := fuzzy.RankFind(noteToFind, notesNames)
 	noteFound := notesFound[0].Target
 
-	err = edit(os.Getenv("EDITOR"), filepath.Join(notePath, noteFound))
+	err = edit(viper.GetString("editor"), filepath.Join(notePath, noteFound))
 	if err != nil {
 		return
 	}
@@ -250,7 +252,7 @@ func editNote(context *cli.Context) {
 }
 
 func listNotes(context *cli.Context) {
-	notePath := os.Getenv("NOTE_PATH")
+	notePath := viper.GetString("notePath")
 
 	notesNames, err := existingNotesNames(notePath)
 
@@ -266,11 +268,24 @@ func listNotes(context *cli.Context) {
 }
 
 func main() {
+	currentUser, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	viper.SetDefault("notePath", filepath.Join(currentUser.HomeDir, "Notes"))
+
+	viper.SetConfigName(".noteconfig")
+	viper.AddConfigPath(currentUser.HomeDir)
+	viper.AddConfigPath(".")
+	viper.AutomaticEnv()
+	_ = viper.ReadInConfig()
+
 	app := cli.NewApp()
 
 	app.Name = "Note"
 
-	app.Version = "0.0.2"
+	app.Version = "0.0.3"
 
 	app.Usage = "Quick and easy Command-line tool for taking notes"
 	app.UsageText = "note [just type a text] [or command] [with command options]"
@@ -304,7 +319,7 @@ func main() {
 		},
 	}
 
-	err := app.Run(os.Args)
+	err = app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
 	}
