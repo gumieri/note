@@ -29,6 +29,11 @@ func ShowNote(context *cli.Context) {
 	noteToFind := strings.Join(context.Args()[:], " ")
 
 	notesFound := fuzzy.RankFind(noteToFind, notesNames)
+
+	if len(notesFound) == 0 {
+		os.Exit(1)
+	}
+
 	noteFound := notesFound[0].Target
 
 	noteContent, err := ioutil.ReadFile(filepath.Join(notePath, noteFound))

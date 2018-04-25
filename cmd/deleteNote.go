@@ -29,6 +29,11 @@ func DeleteNote(context *cli.Context) {
 	noteToFind := strings.Join(context.Args()[:], " ")
 
 	notesFound := fuzzy.RankFind(noteToFind, notesNames)
+
+	if len(notesFound) == 0 {
+		os.Exit(1)
+	}
+
 	noteFound := notesFound[0].Target
 
 	confirmMessage := fmt.Sprintf("Do you want to delete the note %s ?", noteFound)
