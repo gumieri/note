@@ -31,15 +31,17 @@ func DeleteNote(context *cli.Context) {
 	notesFound := fuzzy.RankFind(noteToFind, notesNames)
 	noteFound := notesFound[0].Target
 
-	confirmMessage := fmt.Sprintf("Do you want to delete the note %s ?", noteFound)
-	if libCli.Confirm(confirmMessage) {
-		err = os.Remove(filepath.Join(notePath, noteFound))
-
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
+	confirmMessage := fmt.Sprintf("Do you want to delete the note %s ? ", noteFound)
+	if !context.Bool("yes") && !libCli.Confirm(confirmMessage) {
+		return
 	}
+
+	err = os.Remove(filepath.Join(notePath, noteFound))
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	return
 }

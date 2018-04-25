@@ -57,6 +57,9 @@ func main() {
 			Aliases: []string{"del", "d", "rm"},
 			Usage:   "delete a note",
 			Action:  cmd.DeleteNote,
+			Flags: []cli.Flag{
+				cli.BoolFlag{Name: "yes, y"},
+			},
 		},
 		{
 			Name:    "list",
