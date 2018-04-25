@@ -7,6 +7,7 @@ import (
 	"strconv"
 )
 
+// ExistingNames return the file names from the given NOTE_PATH
 func ExistingNames(notePath string) (notesNames []string, err error) {
 	f, err := os.Open(notePath)
 
@@ -30,6 +31,7 @@ func ExistingNames(notePath string) (notesNames []string, err error) {
 	return
 }
 
+// NextNumber return the incremented number from ExistingNames
 func NextNumber(notePath string) (number int, err error) {
 	notesNames, err := ExistingNames(notePath)
 
