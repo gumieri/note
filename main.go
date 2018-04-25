@@ -4,9 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
-	"os/exec"
 	"os/user"
 	"path/filepath"
 	"regexp"
@@ -14,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 
+	editor "github.com/gumieri/open-in-editor"
 	"github.com/renstrom/fuzzysearch/fuzzy"
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
@@ -66,85 +65,35 @@ func incrementNoteNumber(notePath string) (number int, err error) {
 	return
 }
 
-func edit(editorCommand string, filePath string) (err error) {
-	editor := exec.Command(editorCommand, filePath)
-
-	editor.Stdin = os.Stdin
-	editor.Stdout = os.Stdout
-	editor.Stderr = os.Stderr
-
-	err = editor.Start()
-	if err != nil {
-		return
-	}
-
-	err = editor.Wait()
-	if err != nil {
-		return
-	}
-
-	return
-}
-
-func getTextFromEditor(editorCommand string, fileName string) (text string, err error) {
-	filePath := filepath.Join(os.TempDir(), fileName)
-
-	tmpFile, err := os.Create(filePath)
-	if err != nil {
-		return
-	}
-
-	tmpFile.Close()
-
-	editorCmd := exec.Command(editorCommand, filePath)
-	editorCmd.Stdin = os.Stdin
-	editorCmd.Stdout = os.Stdout
-	editorCmd.Stderr = os.Stderr
-
-	err = editorCmd.Start()
-	if err != nil {
-		return
-	}
-
-	err = editorCmd.Wait()
-	if err != nil {
-		return
-	}
-
-	content, err := ioutil.ReadFile(filePath)
-	if err != nil {
-		return
-	}
-
-	text = string(content)
-
-	return
-}
-
 func writeNote(context *cli.Context) {
 	notePath := viper.GetString("notePath")
 
 	nextNumber, err := incrementNoteNumber(notePath)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	nextNumberString := strconv.Itoa(nextNumber)
 
+	editorCommand := viper.GetString("editor")
+	tmpFileName := nextNumberString + " - new note"
 	var noteContent string
 	if len(context.Args()) == 0 {
-		noteContent, err = getTextFromEditor(viper.GetString("editor"), nextNumberString)
+		noteContent, err = editor.GetContentFromTemporaryFile(editorCommand, tmpFileName)
 
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 	} else {
 		noteContent = strings.Join(context.Args()[:], " ") + "\n"
 	}
 
 	if noteContent == "" {
-		log.Fatal(errors.New("Empty content"))
+		fmt.Println(errors.New("Empty content"))
+		os.Exit(1)
 	}
 
 	noteTitle := strings.Split(noteContent, "\n")[0]
@@ -166,7 +115,8 @@ func writeNote(context *cli.Context) {
 	noteFile, err := os.Create(filepath.Join(notePath, noteName))
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	fmt.Println(noteName)
@@ -183,7 +133,8 @@ func showNote(context *cli.Context) {
 	notesNames, err := existingNotesNames(notePath)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	noteToFind := strings.Join(context.Args()[:], " ")
@@ -194,7 +145,8 @@ func showNote(context *cli.Context) {
 	noteContent, err := ioutil.ReadFile(filepath.Join(notePath, noteFound))
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	fmt.Println(noteFound + "\n")
@@ -208,7 +160,8 @@ func deleteNote(context *cli.Context) {
 	notesNames, err := existingNotesNames(notePath)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	noteToFind := strings.Join(context.Args()[:], " ")
@@ -219,7 +172,8 @@ func deleteNote(context *cli.Context) {
 	err = os.Remove(filepath.Join(notePath, noteFound))
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	return
@@ -231,7 +185,8 @@ func editNote(context *cli.Context) {
 	notesNames, err := existingNotesNames(notePath)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	noteToFind := strings.Join(context.Args()[:], " ")
@@ -239,13 +194,14 @@ func editNote(context *cli.Context) {
 	notesFound := fuzzy.RankFind(noteToFind, notesNames)
 	noteFound := notesFound[0].Target
 
-	err = edit(viper.GetString("editor"), filepath.Join(notePath, noteFound))
+	err = editor.File(viper.GetString("editor"), filepath.Join(notePath, noteFound))
 	if err != nil {
 		return
 	}
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	return
@@ -257,7 +213,8 @@ func listNotes(context *cli.Context) {
 	notesNames, err := existingNotesNames(notePath)
 
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
 	for _, note := range notesNames {
@@ -270,9 +227,11 @@ func listNotes(context *cli.Context) {
 func main() {
 	currentUser, err := user.Current()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 
+	viper.SetDefault("editor", "vim")
 	viper.SetDefault("notePath", filepath.Join(currentUser.HomeDir, "Notes"))
 
 	viper.SetConfigName(".noteconfig")
@@ -321,6 +280,7 @@ func main() {
 
 	err = app.Run(os.Args)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
 }
