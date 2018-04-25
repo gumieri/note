@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
 
+	libCli "github.com/gumieri/note/lib/cli"
 	"github.com/gumieri/note/lib/notes"
 )
 
@@ -30,12 +31,15 @@ func DeleteNote(context *cli.Context) {
 	notesFound := fuzzy.RankFind(noteToFind, notesNames)
 	noteFound := notesFound[0].Target
 
-	err = os.Remove(filepath.Join(notePath, noteFound))
+	confirmMessage := fmt.Sprintf("Do you want to delete the note %s ?", noteFound)
+	if libCli.Confirm(confirmMessage) {
+		err = os.Remove(filepath.Join(notePath, noteFound))
 
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
 	}
-
 	return
 }
