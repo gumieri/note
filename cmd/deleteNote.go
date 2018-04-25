@@ -31,7 +31,7 @@ func DeleteNote(context *cli.Context) {
 	notesFound := fuzzy.RankFind(noteToFind, notesNames)
 	noteFound := notesFound[0].Target
 
-	confirmMessage := fmt.Sprintf("Do you want to delete the note %s ? ", noteFound)
+	confirmMessage := fmt.Sprintf("Do you want to delete the note %s ?", noteFound)
 	if !context.Bool("yes") && !libCli.Confirm(confirmMessage) {
 		return
 	}

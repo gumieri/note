@@ -40,6 +40,13 @@ func main() {
 
 	app.Action = cmd.WriteNote
 
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "title, t",
+			Usage: "inform a title for the note",
+		},
+	}
+
 	app.Commands = []cli.Command{
 		{
 			Name:   "show",

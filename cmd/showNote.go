@@ -38,7 +38,6 @@ func ShowNote(context *cli.Context) {
 		os.Exit(1)
 	}
 
-	fmt.Println(noteFound + "\n")
-	fmt.Print(string(noteContent))
+	fmt.Printf("%s\n\n%s", noteFound, noteContent)
 	return
 }

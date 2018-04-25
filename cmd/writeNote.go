@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	editor "github.com/gumieri/open-in-editor"
@@ -22,6 +21,8 @@ import (
 func WriteNote(context *cli.Context) {
 	notePath := viper.GetString("notePath")
 
+	noteTitle := context.String("title")
+
 	nextNumber, err := notes.NextNumber(notePath)
 
 	if err != nil {
@@ -29,12 +30,17 @@ func WriteNote(context *cli.Context) {
 		os.Exit(1)
 	}
 
-	nextNumberString := strconv.Itoa(nextNumber)
-
-	editorCommand := viper.GetString("editor")
-	tmpFileName := nextNumberString + " - new note"
 	var noteContent string
 	if len(context.Args()) == 0 {
+		editorCommand := viper.GetString("editor")
+		var tmpTitle string
+		if noteTitle == "" {
+			tmpTitle = "new note"
+		} else {
+			tmpTitle = noteTitle
+		}
+
+		tmpFileName := fmt.Sprintf("%d - %s", nextNumber, tmpTitle)
 		noteContent, err = editor.GetContentFromTemporaryFile(editorCommand, tmpFileName)
 
 		if err != nil {
@@ -42,7 +48,7 @@ func WriteNote(context *cli.Context) {
 			os.Exit(1)
 		}
 	} else {
-		noteContent = strings.Join(context.Args()[:], " ") + "\n"
+		noteContent = fmt.Sprintf("%s\n", strings.Join(context.Args()[:], " "))
 	}
 
 	if noteContent == "" {
@@ -50,19 +56,21 @@ func WriteNote(context *cli.Context) {
 		os.Exit(1)
 	}
 
-	noteTitle := strings.Split(noteContent, "\n")[0]
-	if len(noteTitle) > 72 {
-		nextCharacter := noteTitle[72:73]
+	if noteTitle == "" {
+		noteTitle = strings.Split(noteContent, "\n")[0]
+		if len(noteTitle) > 72 {
+			nextCharacter := noteTitle[72:73]
 
-		noteTitle = noteTitle[0:72]
+			noteTitle = noteTitle[0:72]
 
-		if nextCharacter != " " {
-			lastSpace := strings.LastIndex(noteTitle, " ")
-			noteTitle = noteTitle[0:lastSpace]
+			if nextCharacter != " " {
+				lastSpace := strings.LastIndex(noteTitle, " ")
+				noteTitle = noteTitle[0:lastSpace]
+			}
 		}
 	}
 
-	noteName := nextNumberString + " - " + noteTitle
+	noteName := fmt.Sprintf("%d - %s", nextNumber, noteTitle)
 
 	_ = os.Mkdir(notePath, 0755)
 

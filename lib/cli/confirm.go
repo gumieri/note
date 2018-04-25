@@ -10,7 +10,7 @@ import (
 // Confirm wait for user response returning
 // `true` if the answer was y or yes
 func Confirm(message string) bool {
-	fmt.Printf("%s [y/N]", message)
+	fmt.Printf("%s [y/N] ", message)
 
 	reader := bufio.NewReader(os.Stdin)
 
