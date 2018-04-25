@@ -2,10 +2,12 @@ language: go
 go:
 - 1.x
 script:
-- GOOS=linux GOARCH=amd64 go build -o release/note-linux-amd64
-- GOOS=darwin GOARCH=amd64 go build -o release/note-osx-amd64
-- GOOS=windows GOARCH=amd64 go build -o release/note-win-amd64.exe --ldflags="-H windowsgui"
-- GOOS=windows GOARCH=386 go build -o release/note-win-386.exe --ldflags="-H windowsgui"
+- GOOS=linux GOARCH=amd64 go build -o release/note-Linux-x86_64
+- GOOS=linux GOARCH=386 go build -o release/note-Linux-i386
+- GOOS=darwin GOARCH=amd64 go build -o release/note-Darwin-x86_64
+- GOOS=darwin GOARCH=386 go build -o release/note-Darwin-i386
+- GOOS=windows GOARCH=amd64 go build -o release/note-Windows-x86_64.exe --ldflags="-H windowsgui"
+- GOOS=windows GOARCH=386 go build -o release/note-Windows-i386.exe --ldflags="-H windowsgui"
 deploy:
   provider: releases
   api_key:
