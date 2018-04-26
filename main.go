@@ -43,26 +43,26 @@ func main() {
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "title, t",
-			Usage: "inform a title for the note",
+			Usage: "Inform a title for the note",
 		},
 	}
 
 	app.Commands = []cli.Command{
 		{
 			Name:   "show",
-			Usage:  "show a note contet",
+			Usage:  "Show a note content",
 			Action: cmd.ShowNote,
 		},
 		{
 			Name:    "edit",
 			Aliases: []string{"e"},
-			Usage:   "edit a note contet",
+			Usage:   "Edit a note content",
 			Action:  cmd.EditNote,
 		},
 		{
 			Name:    "delete",
 			Aliases: []string{"del", "d", "rm"},
-			Usage:   "delete a note",
+			Usage:   "Delete a note",
 			Action:  cmd.DeleteNote,
 			Flags: []cli.Flag{
 				cli.BoolFlag{Name: "yes, y"},
@@ -71,7 +71,7 @@ func main() {
 		{
 			Name:    "list",
 			Aliases: []string{"ls", "l"},
-			Usage:   "list notes",
+			Usage:   "List notes",
 			Action:  cmd.ListNotes,
 		},
 	}
