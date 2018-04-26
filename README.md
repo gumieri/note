@@ -38,10 +38,10 @@ note [just type a text] [or command] [with command options]
 ### Commands
 
 ```
-show                show a note contet
-edit, e             edit a note contet
-delete, del, d, rm  delete a note
-list, ls, l         list notes
+show                Show a note content
+edit, e             Edit a note content
+delete, del, d, rm  Delete a note
+list, ls, l         List notes
 help, h             Shows a list of commands or help for one command
 ```
 
