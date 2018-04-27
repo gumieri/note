@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
-
-	editor "github.com/gumieri/open-in-editor"
-	"github.com/renstrom/fuzzysearch/fuzzy"
-	"github.com/spf13/viper"
-	"github.com/urfave/cli"
 
 	"github.com/gumieri/note/lib/notes"
+	editor "github.com/gumieri/open-in-editor"
+	"github.com/spf13/viper"
+	"github.com/urfave/cli"
 )
 
 // EditNote accept one argument to execute a
@@ -20,22 +17,7 @@ import (
 func EditNote(context *cli.Context) {
 	notePath := viper.GetString("notePath")
 
-	notesNames, err := notes.ExistingNames(notePath)
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	noteToFind := strings.Join(context.Args()[:], " ")
-
-	notesFound := fuzzy.RankFind(noteToFind, notesNames)
-
-	if len(notesFound) == 0 {
-		os.Exit(1)
-	}
-
-	noteFound := notesFound[0].Target
+	noteFound, err := notes.FindNoteName(notePath, context.Args()[:])
 
 	err = editor.File(viper.GetString("editor"), filepath.Join(notePath, noteFound))
 

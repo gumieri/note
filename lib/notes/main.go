@@ -1,11 +1,34 @@
 package notes
 
 import (
+	"errors"
 	"os"
 	"regexp"
 	"sort"
 	"strconv"
+	"strings"
+
+	"github.com/renstrom/fuzzysearch/fuzzy"
 )
+
+// FindNoteName return a note from slice of string
+func FindNoteName(notePath string, words []string) (noteName string, err error) {
+	notesNames, err := ExistingNames(notePath)
+
+	if err != nil {
+		return
+	}
+
+	notesFound := fuzzy.RankFind(strings.Join(words, " "), notesNames)
+
+	if len(notesFound) == 0 {
+		err = errors.New("No note found")
+		return
+	}
+
+	noteName = notesFound[0].Target
+	return
+}
 
 // ExistingNames return the file names from the given NOTE_PATH
 func ExistingNames(notePath string) (notesNames []string, err error) {
