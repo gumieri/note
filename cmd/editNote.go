@@ -38,9 +38,6 @@ func EditNote(context *cli.Context) {
 	noteFound := notesFound[0].Target
 
 	err = editor.File(viper.GetString("editor"), filepath.Join(notePath, noteFound))
-	if err != nil {
-		return
-	}
 
 	if err != nil {
 		fmt.Println(err)
