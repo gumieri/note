@@ -78,6 +78,18 @@ note edit 0
 note e 0
 ```
 
+#### Edit Note's title
+
+Edit the title of a note.
+It's the edit command with `--title` / `-t` flag option.
+So you can rename a note title:
+```
+note edit --title renamed 0
+```
+```
+note edit -t renamed 0
+```
+
 #### Delete
 
 Delete a note.
