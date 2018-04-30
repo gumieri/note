@@ -21,11 +21,15 @@ import (
 func WriteNote(context *cli.Context) {
 	notePath := viper.GetString("notePath")
 
-	err := os.Mkdir(notePath, 0755)
+	_, err := os.Stat(notePath)
 
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		err := os.Mkdir(notePath, 0755)
+
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 
 	noteTitle := context.String("title")
@@ -47,8 +51,8 @@ func WriteNote(context *cli.Context) {
 			tmpTitle = noteTitle
 		}
 
-		tmpFileName := fmt.Sprintf("%d - %s", nextNumber, tmpTitle)
-		noteContent, err = editor.GetContentFromTemporaryFile(editorCommand, tmpFileName)
+		tmpFileName := notes.NoteName(nextNumber, tmpTitle)
+		noteContent, err = editor.GetContentFromTemporaryFile(editorCommand, tmpFileName, "")
 
 		if err != nil {
 			fmt.Println(err)
@@ -64,20 +68,10 @@ func WriteNote(context *cli.Context) {
 	}
 
 	if noteTitle == "" {
-		noteTitle = strings.Split(noteContent, "\n")[0]
-		if len(noteTitle) > 72 {
-			nextCharacter := noteTitle[72:73]
-
-			noteTitle = noteTitle[0:72]
-
-			if nextCharacter != " " {
-				lastSpace := strings.LastIndex(noteTitle, " ")
-				noteTitle = noteTitle[0:lastSpace]
-			}
-		}
+		noteTitle = notes.FormatTitle(noteContent)
 	}
 
-	noteName := fmt.Sprintf("%d - %s", nextNumber, noteTitle)
+	noteName := notes.NoteName(nextNumber, noteTitle)
 
 	noteFile, err := os.Create(filepath.Join(notePath, noteName))
 

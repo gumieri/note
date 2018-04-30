@@ -2,6 +2,7 @@ package notes
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"regexp"
 	"sort"
@@ -13,6 +14,44 @@ import (
 
 var noteRegex = regexp.MustCompile("^[0-9]+ - ")
 var numberRegex = regexp.MustCompile("^[0-9]+")
+
+// TitleFromNoteName extract title from a noteName
+func TitleFromNoteName(noteName string) string {
+	return noteRegex.ReplaceAllString(noteName, "")
+}
+
+// TitleFromNoteName extract number from a noteName
+func NumberFromNoteName(noteName string) int {
+	number, _ := strconv.Atoi(numberRegex.FindAllString(noteName, 1)[0])
+	return number
+}
+
+// NoteName join number and title
+func NoteName(number int, title string) string {
+	return fmt.Sprintf("%d - %s", number, title)
+}
+
+// FormatTitle return the first line of a string and
+// cut the words to be smaller than 72 characters
+func FormatTitle(raw string) (formated string) {
+	formated = strings.Split(raw, "\n")[0]
+
+	if len(formated) <= 72 {
+		return
+	}
+
+	nextCharacter := formated[72:73]
+
+	formated = formated[0:72]
+
+	if nextCharacter == " " {
+		return
+	}
+
+	lastSpace := strings.LastIndex(formated, " ")
+	formated = formated[0:lastSpace]
+	return
+}
 
 // FindNoteName return a note from slice of string
 func FindNoteName(notePath string, words []string) (noteName string, err error) {
@@ -63,22 +102,13 @@ func ExistingNames(notePath string) (notesNames []string, err error) {
 func NextNumber(notePath string) (number int, err error) {
 	notesNames, err := ExistingNames(notePath)
 
-	if err != nil {
-		return
-	}
-
-	if len(notesNames) == 0 {
+	if err != nil || len(notesNames) == 0 {
 		return
 	}
 
 	lastNoteName := notesNames[len(notesNames)-1]
-	number, err = strconv.Atoi(numberRegex.FindAllString(lastNoteName, 1)[0])
 
-	if err != nil {
-		return
-	}
-
-	number = number + 1
+	number = NumberFromNoteName(lastNoteName) + 1
 
 	return
 }

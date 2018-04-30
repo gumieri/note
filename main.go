@@ -58,6 +58,12 @@ func main() {
 			Aliases: []string{"e"},
 			Usage:   "Edit a note content",
 			Action:  cmd.EditNote,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "title, t",
+					Usage: "Edit the title of the note",
+				},
+			},
 		},
 		{
 			Name:    "delete",
