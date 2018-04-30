@@ -20,7 +20,7 @@ func TitleFromNoteName(noteName string) string {
 	return noteRegex.ReplaceAllString(noteName, "")
 }
 
-// TitleFromNoteName extract number from a noteName
+// NumberFromNoteName extract number from a noteName
 func NumberFromNoteName(noteName string) int {
 	number, _ := strconv.Atoi(numberRegex.FindAllString(noteName, 1)[0])
 	return number
