@@ -25,6 +25,11 @@ func ShowNote(context *cli.Context) {
 
 	noteFound, err := notes.FindNoteName(notePath, context.Args()[:])
 
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	noteContent, err := ioutil.ReadFile(filepath.Join(notePath, noteFound))
 
 	if err != nil {

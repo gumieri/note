@@ -25,6 +25,11 @@ func DeleteNote(context *cli.Context) {
 
 	noteFound, err := notes.FindNoteName(notePath, context.Args()[:])
 
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	confirmMessage := fmt.Sprintf("Do you want to delete the note %s ?", noteFound)
 	if !context.Bool("yes") && !libCli.Confirm(confirmMessage) {
 		return
