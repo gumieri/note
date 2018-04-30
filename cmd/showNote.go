@@ -16,6 +16,13 @@ import (
 func ShowNote(context *cli.Context) {
 	notePath := viper.GetString("notePath")
 
+	_, err := os.Stat(notePath)
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	noteFound, err := notes.FindNoteName(notePath, context.Args()[:])
 
 	noteContent, err := ioutil.ReadFile(filepath.Join(notePath, noteFound))

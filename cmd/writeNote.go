@@ -21,6 +21,13 @@ import (
 func WriteNote(context *cli.Context) {
 	notePath := viper.GetString("notePath")
 
+	err := os.Mkdir(notePath, 0755)
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	noteTitle := context.String("title")
 
 	nextNumber, err := notes.NextNumber(notePath)
@@ -71,8 +78,6 @@ func WriteNote(context *cli.Context) {
 	}
 
 	noteName := fmt.Sprintf("%d - %s", nextNumber, noteTitle)
-
-	_ = os.Mkdir(notePath, 0755)
 
 	noteFile, err := os.Create(filepath.Join(notePath, noteName))
 
