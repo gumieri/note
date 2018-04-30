@@ -11,6 +11,9 @@ import (
 	"github.com/renstrom/fuzzysearch/fuzzy"
 )
 
+var noteRegex = regexp.MustCompile("^[0-9]+ - ")
+var numberRegex = regexp.MustCompile("^[0-9]+")
+
 // FindNoteName return a note from slice of string
 func FindNoteName(notePath string, words []string) (noteName string, err error) {
 	notesNames, err := ExistingNames(notePath)
@@ -48,7 +51,9 @@ func ExistingNames(notePath string) (notesNames []string, err error) {
 	sort.Slice(list, func(a, b int) bool { return list[a].Name() < list[b].Name() })
 
 	for _, file := range list {
-		notesNames = append(notesNames, file.Name())
+		if noteRegex.MatchString(file.Name()) {
+			notesNames = append(notesNames, file.Name())
+		}
 	}
 
 	return
@@ -67,8 +72,7 @@ func NextNumber(notePath string) (number int, err error) {
 	}
 
 	lastNoteName := notesNames[len(notesNames)-1]
-	re := regexp.MustCompile("^[0-9]+")
-	number, err = strconv.Atoi(re.FindAllString(lastNoteName, 1)[0])
+	number, err = strconv.Atoi(numberRegex.FindAllString(lastNoteName, 1)[0])
 
 	if err != nil {
 		return
