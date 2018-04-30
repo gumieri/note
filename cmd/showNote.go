@@ -23,7 +23,7 @@ func ShowNote(context *cli.Context) {
 		os.Exit(1)
 	}
 
-	noteFound, err := notes.FindNoteName(notePath, context.Args()[:])
+	noteFound, err := notes.FindNoteName(notePath, context.Args())
 
 	if err != nil {
 		fmt.Println(err)
@@ -37,6 +37,9 @@ func ShowNote(context *cli.Context) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("%s\n\n%s", noteFound, noteContent)
+	number := notes.NumberFromNoteName(noteFound)
+	title := notes.TitleFromNoteName(noteFound)
+
+	fmt.Printf("%d\t%s\n\n%s", number, title, noteContent)
 	return
 }

@@ -59,8 +59,6 @@ func EditNote(context *cli.Context) {
 
 	noteTitle := context.String("title")
 
-	args := context.Args()[:]
-
 	_, err := os.Stat(notePath)
 
 	if err != nil {
@@ -69,9 +67,9 @@ func EditNote(context *cli.Context) {
 	}
 
 	if noteTitle == "" {
-		err = editContent(notePath, args)
+		err = editContent(notePath, context.Args())
 	} else {
-		err = editTitle(notePath, noteTitle, args)
+		err = editTitle(notePath, noteTitle, context.Args())
 	}
 
 	if err != nil {

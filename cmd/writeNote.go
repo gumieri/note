@@ -44,6 +44,7 @@ func WriteNote(context *cli.Context) {
 	var noteContent string
 	if len(context.Args()) == 0 {
 		editorCommand := viper.GetString("editor")
+
 		var tmpTitle string
 		if noteTitle == "" {
 			tmpTitle = "new note"
@@ -59,7 +60,7 @@ func WriteNote(context *cli.Context) {
 			os.Exit(1)
 		}
 	} else {
-		noteContent = fmt.Sprintf("%s\n", strings.Join(context.Args()[:], " "))
+		noteContent = fmt.Sprintf("%s\n", strings.Join(context.Args(), " "))
 	}
 
 	if noteContent == "" {
@@ -80,10 +81,11 @@ func WriteNote(context *cli.Context) {
 		os.Exit(1)
 	}
 
-	fmt.Println(noteName)
 	noteFile.WriteString(noteContent)
 
 	defer noteFile.Close()
+
+	fmt.Printf("%d\t%s\n", nextNumber, noteTitle)
 
 	return
 }

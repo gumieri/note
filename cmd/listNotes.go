@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/fatih/color"
+	"github.com/gumieri/note/lib/notes"
 	"github.com/spf13/viper"
 	"github.com/urfave/cli"
-
-	"github.com/gumieri/note/lib/notes"
 )
 
 // ListNotes list all existing notes in the NOTE_PATH
@@ -28,8 +28,11 @@ func ListNotes(context *cli.Context) {
 		os.Exit(1)
 	}
 
-	for _, note := range notesNames {
-		fmt.Println(note)
+	color.New(color.Bold).Println("ID\tTitle")
+	for _, noteName := range notesNames {
+		number := notes.NumberFromNoteName(noteName)
+		title := notes.TitleFromNoteName(noteName)
+		fmt.Printf("%d\t%s\n", number, title)
 	}
 
 	return
