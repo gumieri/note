@@ -32,7 +32,7 @@ func main() {
 
 	app.Name = "Note"
 
-	app.Version = "0.1.0"
+	app.Version = "1.0.0"
 
 	app.Usage = "Quick and easy Command-line tool for taking notes"
 	app.UsageText = "note [just type a text] [or command] [with command options]"
