@@ -32,7 +32,7 @@ func main() {
 
 	app.Name = "Note"
 
-	app.Version = "1.0.0"
+	app.Version = "1.1.0"
 
 	app.Usage = "Quick and easy Command-line tool for taking notes"
 	app.UsageText = "note [just type a text] [or command] [with command options]"
@@ -52,6 +52,12 @@ func main() {
 			Name:   "show",
 			Usage:  "Show a note content",
 			Action: cmd.ShowNote,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "no-title",
+					Usage: "Don't print note's title",
+				},
+			},
 		},
 		{
 			Name:    "edit",
@@ -71,7 +77,10 @@ func main() {
 			Usage:   "Delete a note",
 			Action:  cmd.DeleteNote,
 			Flags: []cli.Flag{
-				cli.BoolFlag{Name: "yes, y"},
+				cli.BoolFlag{
+					Name:  "yes, y",
+					Usage: "Delete without asking confirmation",
+				},
 			},
 		},
 		{
@@ -79,6 +88,16 @@ func main() {
 			Aliases: []string{"ls", "l"},
 			Usage:   "List notes",
 			Action:  cmd.ListNotes,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "no-header",
+					Usage: "Don't print the description header of the columns",
+				},
+				cli.BoolFlag{
+					Name:  "filename",
+					Usage: "Print only the filenames of the notes at the notePath",
+				},
+			},
 		},
 	}
 

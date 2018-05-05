@@ -40,6 +40,10 @@ func ShowNote(context *cli.Context) {
 	number := notes.NumberFromNoteName(noteFound)
 	title := notes.TitleFromNoteName(noteFound)
 
-	fmt.Printf("%d\t%s\n\n%s", number, title, noteContent)
+	if !context.Bool("no-title") {
+		fmt.Printf("%d\t%s\n\n", number, title)
+	}
+
+	fmt.Print(string(noteContent))
 	return
 }

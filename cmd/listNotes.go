@@ -28,8 +28,16 @@ func ListNotes(context *cli.Context) {
 		os.Exit(1)
 	}
 
-	color.New(color.Bold).Println("ID\tTitle")
+	if !context.Bool("filename") && !context.Bool("no-header") {
+		color.New(color.Bold).Println("ID\tTitle")
+	}
+
 	for _, noteName := range notesNames {
+		if context.Bool("filename") {
+			fmt.Println(noteName)
+			continue
+		}
+
 		number := notes.NumberFromNoteName(noteName)
 		title := notes.TitleFromNoteName(noteName)
 		fmt.Printf("%d\t%s\n", number, title)
