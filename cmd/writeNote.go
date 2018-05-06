@@ -86,6 +86,4 @@ func WriteNote(context *cli.Context) {
 	defer noteFile.Close()
 
 	fmt.Printf("%d\t%s\n", nextNumber, noteTitle)
-
-	return
 }

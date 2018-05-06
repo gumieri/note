@@ -43,6 +43,4 @@ func DeleteNote(context *cli.Context) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	return
 }

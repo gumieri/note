@@ -42,6 +42,4 @@ func ListNotes(context *cli.Context) {
 		title := notes.TitleFromNoteName(noteName)
 		fmt.Printf("%d\t%s\n", number, title)
 	}
-
-	return
 }

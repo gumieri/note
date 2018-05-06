@@ -45,5 +45,4 @@ func ShowNote(context *cli.Context) {
 	}
 
 	fmt.Print(string(noteContent))
-	return
 }
