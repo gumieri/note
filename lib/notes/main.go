@@ -54,14 +54,19 @@ func FormatTitle(raw string) (formated string) {
 }
 
 // FindNoteName return a note from slice of string
-func FindNoteName(notePath string, words []string) (noteName string, err error) {
+func FindNoteName(notePath string, words []string, caseSensitive bool) (noteName string, err error) {
 	notesNames, err := ExistingNames(notePath)
 
 	if err != nil {
 		return
 	}
 
-	notesFound := fuzzy.RankFind(strings.Join(words, " "), notesNames)
+	var notesFound fuzzy.Ranks
+	if caseSensitive {
+		notesFound = fuzzy.RankFind(strings.Join(words, " "), notesNames)
+	} else {
+		notesFound = fuzzy.RankFindFold(strings.Join(words, " "), notesNames)
+	}
 
 	if len(notesFound) == 0 {
 		err = errors.New("No note found")

@@ -23,7 +23,9 @@ func ShowNote(context *cli.Context) {
 		os.Exit(1)
 	}
 
-	noteFound, err := notes.FindNoteName(notePath, context.Args())
+	caseSensitive := context.Bool("case-sensitive")
+
+	noteFound, err := notes.FindNoteName(notePath, context.Args(), caseSensitive)
 
 	if err != nil {
 		fmt.Println(err)

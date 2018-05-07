@@ -57,6 +57,10 @@ func main() {
 					Name:  "no-title",
 					Usage: "Don't print note's title",
 				},
+				cli.BoolFlag{
+					Name:  "case-sensitive, s",
+					Usage: "Must match the case of the informed parameters and note's title",
+				},
 			},
 		},
 		{
@@ -69,6 +73,10 @@ func main() {
 					Name:  "title, t",
 					Usage: "Edit the title of the note",
 				},
+				cli.BoolFlag{
+					Name:  "case-sensitive, s",
+					Usage: "Must match the case of the informed parameters and note's title",
+				},
 			},
 		},
 		{
@@ -80,6 +88,10 @@ func main() {
 				cli.BoolFlag{
 					Name:  "yes, y",
 					Usage: "Delete without asking confirmation",
+				},
+				cli.BoolFlag{
+					Name:  "case-sensitive, s",
+					Usage: "Must match the case of the informed parameters and note's title",
 				},
 			},
 		},

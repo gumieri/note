@@ -11,8 +11,8 @@ import (
 	"github.com/urfave/cli"
 )
 
-func editContent(notePath string, words []string) (err error) {
-	noteFound, err := notes.FindNoteName(notePath, words)
+func editContent(notePath string, words []string, caseSensitive bool) (err error) {
+	noteFound, err := notes.FindNoteName(notePath, words, caseSensitive)
 
 	if err != nil {
 		return
@@ -23,13 +23,13 @@ func editContent(notePath string, words []string) (err error) {
 	return
 }
 
-func editTitle(notePath string, newTitle string, words []string) (err error) {
+func editTitle(notePath string, newTitle string, words []string, caseSensitive bool) (err error) {
 	if len(words) == 0 {
 		words = append(words, newTitle)
 		newTitle = ""
 	}
 
-	oldName, err := notes.FindNoteName(notePath, words)
+	oldName, err := notes.FindNoteName(notePath, words, caseSensitive)
 
 	if err != nil {
 		return
@@ -66,10 +66,12 @@ func EditNote(context *cli.Context) {
 		os.Exit(1)
 	}
 
+	caseSensitive := context.Bool("case-sensitive")
+
 	if noteTitle == "" {
-		err = editContent(notePath, context.Args())
+		err = editContent(notePath, context.Args(), caseSensitive)
 	} else {
-		err = editTitle(notePath, noteTitle, context.Args())
+		err = editTitle(notePath, noteTitle, context.Args(), caseSensitive)
 	}
 
 	if err != nil {
