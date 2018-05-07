@@ -43,7 +43,7 @@ note "there's no place like home"
 note there\'s no place like home
 ```
 
-It will create a note with the title `0 - there's no place like home`.
+It will create a file named `0 - there's no place like home` at the notePath.
 In case of you need a text editor you can just type `note` without any argument.
 It will open the `EDITOR` defined as environment variable or the configured one.
 
@@ -66,6 +66,7 @@ If it's your first note, you can surely show it by typing:
 ```
 note show 0
 ```
+The search is case insensitive, use the flag option `--case-sensitive` / `-s` if you want to match the case.
 
 #### Edit
 
