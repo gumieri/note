@@ -4,6 +4,10 @@ go:
 script:
 - GOOS=linux GOARCH=amd64 go build -o release/note-Linux-x86_64
 - GOOS=linux GOARCH=386 go build -o release/note-Linux-i386
+- GOOS=linux GOARCH=arm GOARM=5 go build -o release/note-Linux-armv5l
+- GOOS=linux GOARCH=arm GOARM=6 go build -o release/note-Linux-armv6l
+- GOOS=linux GOARCH=arm GOARM=7 go build -o release/note-Linux-armv7l
+- GOOS=linux GOARCH=arm64 go build -o release/note-Linux-armv8l
 - GOOS=darwin GOARCH=amd64 go build -o release/note-Darwin-x86_64
 - GOOS=darwin GOARCH=386 go build -o release/note-Darwin-i386
 - GOOS=windows GOARCH=amd64 go build -o release/note-Windows-x86_64.exe --ldflags="-H windowsgui"
@@ -16,6 +20,10 @@ deploy:
   file:
     - release/note-Linux-x86_64
     - release/note-Linux-i386
+    - release/note-Linux-armv5l
+    - release/note-Linux-armv6l
+    - release/note-Linux-armv7l
+    - release/note-Linux-armv8l
     - release/note-Darwin-x86_64
     - release/note-Darwin-i386
     - release/note-Windows-x86_64.exe
