@@ -92,7 +92,9 @@ func ExistingNames(notePath string) (notesNames []string, err error) {
 		return
 	}
 
-	sort.Slice(list, func(a, b int) bool { return list[a].Name() < list[b].Name() })
+	sort.Slice(list, func(a, b int) bool {
+		return NumberFromNoteName(list[a].Name()) < NumberFromNoteName(list[b].Name())
+	})
 
 	for _, file := range list {
 		if noteRegex.MatchString(file.Name()) {
